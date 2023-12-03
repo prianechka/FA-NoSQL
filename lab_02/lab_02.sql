@@ -39,9 +39,6 @@ db.Answers.insertOne({"1.3":
         ]}]}).count()
 });
 
-db.Students.find({$and: [{"Специальность": "Юриспруденция"}, {"Гражданство": "Российская Федерация"},
-{"Статус": "Обучение"}]}).count()
-
 // Задание 2.1
 db.Answers.insertOne({"2.1":
     db.Students.aggregate([{$group:{_id:"$Форма обучения",count:{$sum:1}}}]).toArray()
