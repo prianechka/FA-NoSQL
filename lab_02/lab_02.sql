@@ -19,13 +19,13 @@ db.Answers.insertOne({"1.1":
 db.Answers.insertOne({"1.2":
     db.Students.find(
     {$or: [
-    {$and: [{"Специальность": "Математика"}, {"Курс": 1}]},
-    {$and: [{"Специальность": "Экономика"}, {"Курс": {$ne: 3}}]},
-    {"Статус": "Обучение"}]}).count()
+    {$and: [{"Специальность": "Математика"}, {"Курс": "1"}, {"Статус": "Обучение"}]},
+    {$and: [{"Специальность": "Экономика"}, {"Курс": {$ne: "3"}}, {"Статус": "Обучение"}]},
+    ]}).count()
 });
 
 // Задание 1.3
-var list_of_france_language = db.Languages2.find({"Languages": {$in: ["французский"]}}, {"_id": 1}).toArray();
+var list_of_france_language = db.Languages2.distinct("_id", {"Languages": {$in: ["французский"]}}).valueOf();
 
 db.Answers.insertOne({"1.3":
     db.Students.find(
@@ -34,10 +34,13 @@ db.Answers.insertOne({"1.3":
         {$or: [
             {$and: [{"Специальность": "Юриспруденция"}, {"Гражданство": "Российская Федерация"}]},
             {$and: [{"Гражданство": {$ne: "Российская Федерация"}},
-                    {"idLanguage": {$nin: list_of_france_language}}
+                    {"idLanguage" : {$nin: list_of_france_language}},
             ]}
         ]}]}).count()
 });
+
+db.Students.find({$and: [{"Специальность": "Юриспруденция"}, {"Гражданство": "Российская Федерация"},
+{"Статус": "Обучение"}]}).count()
 
 // Задание 2.1
 db.Answers.insertOne({"2.1":
@@ -107,6 +110,15 @@ db.Answers.insertOne({"3.4":
     {$match: {$and: [{"Факультет": "Экономический"}, {"Статус": "Отчисление"}]}},
     {$group: {_id: "Средний курс", avgCourse: { $avg: "$Курс" }}}
     ]).toArray()
+});
+
+// Задание 3.5
+db.Answers.insertOne({"3.5":
+    db.Students.aggregate([
+    {$match: {"Статус": "Отчисление"}},
+    {$group: {_id: "$Факультет", minCourse: { $min: "$Курс" }}}
+    ]).toArray()
+});
 });
 
 // Задание 3.5
